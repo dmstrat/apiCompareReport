@@ -1,4 +1,4 @@
-﻿using ApiEndPointReportGenerator.Generators;
+﻿using Core.Generators;
 using Core.Resources;
 using Newtonsoft.Json;
 using System.IO;

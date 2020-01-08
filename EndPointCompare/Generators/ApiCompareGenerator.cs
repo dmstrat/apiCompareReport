@@ -1,53 +1,77 @@
 ﻿using EndPointCompare.Helpers;
+using EndPointCompare.Resources;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Web.Http;
-using System.Web.Http.Description;
 
 namespace EndPointCompare.Generators
 {
   internal class ApiCompareGenerator
   {
-    public void Generate()
-    {
-      var baseLeftFilename = "C:\\output\\msiPrev\\files\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\";
-      var baseRightFilename = "C:\\output\\msiNew\\files\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\";
-      var leftRootFoldername = baseLeftFilename + "RetailWebAPI\\bin\\";
-      var leftRootFolderInfo = FileHelper.GetDirectoryInfo(leftRootFoldername);
-      var rightRootFoldername = baseRightFilename + "RetailWebAPI\\bin\\";
-      var rightRootFolderInfo = FileHelper.GetDirectoryInfo(rightRootFoldername);
-      var leftFilename = leftRootFoldername + "retailwebapi.dll";
-      var leftConfigFilename = baseLeftFilename + "RetailWebAPI\\web.config";
-      var leftConfigFileInfo = FileHelper.GetFileInfo(leftConfigFilename);
-      var rightFilename = rightRootFoldername + "retailwebapi.dll";
-      var rightConfigFilename = baseRightFilename + "RetailWebAPI\\web.config";
-      var rightConfigFileInfo = FileHelper.GetFileInfo(rightConfigFilename);
-      var leftFileInfo = FileHelper.GetFileInfo(leftFilename);
-      var leftFileRootInfo = FileHelper.GetDirectoryInfo(leftRootFoldername);
-      Trace.WriteLine("leftFile:Exists=" + leftFileInfo.Exists + ":" + leftFileInfo.FullName);
-      var rightFileInfo = FileHelper.GetFileInfo(rightFilename);
-      var rightFileRootInfo = FileHelper.GetDirectoryInfo(rightRootFoldername);
-      Trace.WriteLine("rightFile:Exists=" + rightFileInfo.Exists + ":" + rightFileInfo.FullName);
-      //var generator = new ApiReportGenerator();
-      //var leftFileReport = generator.Generate(leftFileInfo, leftRootFolderInfo, leftConfigFileInfo);
-      var leftFileReport = new FileInfo("C:\\output\\retailwebapi_old.rptx");
-      Trace.WriteLine("leftFile Report Generated:" + leftFileReport.FullName);
-      //generator = new ApiReportGenerator();
-      //var rightFileReport = generator.Generate(rightFileInfo, rightRootFolderInfo, rightConfigFileInfo);
-      var rightFileReport = new FileInfo("C:\\output\\retailwebapi_new.rptx");
-      Trace.WriteLine("rightFile Report Generated:" + rightFileReport.FullName);
+    private EndPointCompareConfigResource _Config { get; set; }
+    private string _OldMsiFolderExtractionPoint;// { get; set; }
+    private string _NewMsiFolderExtractionPoint;// { get; set; }
 
-      //do compare
-      var deprecatedReport = GenerateDeprecatedEndPointsReport(leftFileReport, rightFileReport);
-      Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
-      var newReport = GenerateNewEndPointsReport(leftFileReport, rightFileReport);
-      Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
+    public void Generate() //EndPointCompareConfigResource resource)
+    {
+      _Config = SampleGenerator
+        .CreateEndPointCompareConfigResourceSample(); // new EndPointCompareConfigResource();//TODO: Fix!!! resource;
+
+      var baseOutputDirectory = "c:\\output\\";
+      FileHelper.EnsureDirectoryExists(baseOutputDirectory);
+
+      //pre-extraction setup
+      _OldMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
+      Trace.WriteLine("Old MSI Extraction point: " + _OldMsiFolderExtractionPoint);
+      _NewMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
+      Trace.WriteLine("New MSI Extraction point: " + _NewMsiFolderExtractionPoint);
+
+      var oldMsiFilename = _Config.msi_old;
+      var newMsiFilename = _Config.msi_new;
+      //extract msi to temp directories
+      var pe = new ProcessExecutor();
+      pe.ExtractMsiToDirectory(oldMsiFilename, _OldMsiFolderExtractionPoint);
+      pe.ExtractMsiToDirectory(newMsiFilename, _NewMsiFolderExtractionPoint);
+
+      foreach (var personaPair in _Config.PersonaPairs)
+      {
+        Trace.WriteLine("Processing :" + personaPair.Persona + ":");
+        Trace.WriteLine("Developing Api Endpoint Reports...");
+        var oldFilename = Path.Combine(_OldMsiFolderExtractionPoint, personaPair.Resource_Old.InstallationDirectory,
+          personaPair.Resource_Old.SourceFilenameOnly);
+        var oldFileConfig = personaPair.Resource_Old;
+        oldFileConfig.SourceFilename = oldFilename;
+        var oldOutputFilename = FileHelper.CreateTempFile();
+        oldFileConfig.OutputFilename = oldOutputFilename.FullName;
+        var oldFileConfigFilename = FileHelper.CreateTempFile();
+        FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
+        pe.ExecuteEndPointReporter(oldFileConfigFilename);
+
+
+        var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
+          personaPair.Resource_New.SourceFilenameOnly);
+        var newFileConfig = personaPair.Resource_New;
+        newFileConfig.SourceFilename = newFilename;
+        var newOutputFilename = FileHelper.CreateTempFile();
+        newFileConfig.OutputFilename = newOutputFilename.FullName;
+        var newFileConfigFilename = FileHelper.CreateTempFile();
+        FileHelper.SaveAsJson(newFileConfig, newFileConfigFilename.FullName);
+        pe.ExecuteEndPointReporter(newFileConfigFilename);
+
+        Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
+        Trace.WriteLine("Old Api Report:" + oldOutputFilename);
+        Trace.WriteLine("New Api Report: " + newOutputFilename);
+        //do compare
+        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldOutputFilename, newOutputFilename);
+        Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
+        var newReport = GenerateNewEndPointsReport(oldOutputFilename, newOutputFilename);
+        Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
+
+        Trace.WriteLine("...Completed");
+      }
 
     }
+
 
     private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport)
     {
@@ -96,7 +120,7 @@ namespace EndPointCompare.Generators
 
       var deprecatedReport = new FileInfo(Path.GetTempFileName());
       //loop through each left record trying to find a match in the right, no match means deprecated route/method
-      using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName,true))
+      using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName, true))
       {
         using (StreamReader leftStream = new StreamReader(leftFileReport.FullName))
         {

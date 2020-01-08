@@ -2,15 +2,17 @@
 using Core.Resources;
 using Newtonsoft.Json;
 
-namespace ApiEndPointReportGenerator.Generators
+namespace Core.Generators
 {
-  internal static class SampleGenerator
+  public static class SampleGenerator
   {
-    public static void GenerateEndPointReportConfigResource()
+    public static EndPointReportConfigResource GenerateEndPointReportConfigResource(string reportName = "retailwebapi.rptx")
     {
       var resource = new EndPointReportConfigResource();
-      resource.SourceFilename = "C:\\output\\msiPrev\\files\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll";
-      resource.OutputFilename = "c:\\output\\retailwebapi.rptx";
+      resource.SourceFilenameOnly = "RetailWebApi.dll";
+      resource.SourceFilename = "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll";
+      resource.InstallationDirectory = "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\";
+      resource.OutputFilename = "c:\\output\\" + reportName;
       resource.ControllerNamespace = "RP.RetailWebApi";
       resource.HelpPageControllerNamespaceToAvoid = "RP.RetailWebApi.Areas.HelpPage";
       resource.BaseControllerName = "BaseWebRetailWebApiController";
@@ -34,6 +36,8 @@ namespace ApiEndPointReportGenerator.Generators
         JsonSerializer serializer = new JsonSerializer();
         serializer.Serialize(sw, resource);
       }
+
+      return resource;
     }
   }
 }

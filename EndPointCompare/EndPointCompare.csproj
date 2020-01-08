@@ -52,12 +52,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generators\SampleGenerator.cs" />
+    <Compile Include="ProcessExecutor.cs" />
     <Compile Include="Generators\ApiCompareGenerator.cs" />
     <Compile Include="Helpers\AssemblyRedirectHandler.cs" />
     <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
+    <Compile Include="Resources\EndPointCompareConfigResource.cs" />
+    <Compile Include="Resources\EndPointReportConfigPairResource.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

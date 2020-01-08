@@ -88,7 +88,7 @@ namespace ApiEndPointReportGenerator.Generators
 
     private void SaveReportToOutputFile(IList<Tuple<string, string, bool>> routes)
     {
-      using (StreamWriter writer = new StreamWriter(_Config.OutputFilename, false))
+      using (var writer = new StreamWriter(_Config.OutputFilename, false))
       {
         foreach (var route in routes)
         {
