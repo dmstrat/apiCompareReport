@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generators\ApiCompareGenerator.cs" />
-    <Compile Include="Generators\ApiReportGenerator.cs" />
     <Compile Include="Helpers\AssemblyRedirectHandler.cs" />
     <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="Program.cs" />
