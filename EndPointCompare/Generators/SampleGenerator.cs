@@ -22,6 +22,8 @@ namespace EndPointCompare.Generators
       {
         msi_old = "C:\\output\\Retail2019.1.0.1.msi",
         msi_new = "C:\\output\\Retail2020.2.0.0.msi",
+        ApiReportGeneratorExe = 
+          "C:\\src\\dmstrat\\apiCompareReport\\ApiEndPointReportGenerator\\bin\\Debug\\ApiEndPointReportGenerator.exe"
       };
       resource.PersonaPairs.Add(retailWebApiPair);
 
@@ -30,7 +32,6 @@ namespace EndPointCompare.Generators
         JsonSerializer serializer = new JsonSerializer();
         serializer.Serialize(sw, resource);
       }
-
       return resource;
     }
   }

@@ -52,6 +52,9 @@ namespace ApiEndPointReportGenerator.Generators
 
         foreach (var myMethod in controllerMethods)
         {
+          var newRoutes = GenerateRouteEntriesFromMethod(myMethod);
+          routes.AddRange(newRoutes);
+          /*
           var methodHasRouteeAttribute = myMethod
                                            .GetCustomAttributes(typeof(RouteAttribute), false).Length > 0;
           if (methodHasRouteeAttribute)
@@ -73,7 +76,7 @@ namespace ApiEndPointReportGenerator.Generators
               var newEntry = new Tuple<string, string, bool>(routeAttributeCast.Template, methodSignature, isIgnoredByAutoDoc);
               routes.Add(newEntry);
             }
-          }
+          }*/
         }
       }
 
@@ -86,6 +89,35 @@ namespace ApiEndPointReportGenerator.Generators
       return routes;
     }
 
+    private List<Tuple<string, string, bool>> GenerateRouteEntriesFromMethod(MethodInfo myMethod)
+    {
+      var newRoutes = new List<Tuple<string, string, bool>>();
+
+      var methodHasRouteeAttribute = myMethod
+        .GetCustomAttributes(typeof(RouteAttribute), false).Length > 0;
+      if (methodHasRouteeAttribute)
+      {
+
+        var routeAttributes = myMethod.GetCustomAttributes(typeof(RouteAttribute), false);
+        bool isIgnoredByAutoDoc = false;
+        var ignoreAttributes = myMethod.GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), false);
+        var hasIgnoreAttributes = ignoreAttributes.Length > 0;
+        if (hasIgnoreAttributes)
+        {
+          isIgnoredByAutoDoc = ((ApiExplorerSettingsAttribute)ignoreAttributes[0]).IgnoreApi == true;
+        }
+
+        var methodSignature = MethodSignature(myMethod);
+        foreach (var routeAttribute in routeAttributes)
+        {
+          var routeAttributeCast = (RouteAttribute)routeAttribute;
+          var newEntry = new Tuple<string, string, bool>(routeAttributeCast.Template, methodSignature, isIgnoredByAutoDoc);
+          newRoutes.Add(newEntry);
+        }
+      }
+      return newRoutes;
+    }
+    
     private void SaveReportToOutputFile(IList<Tuple<string, string, bool>> routes)
     {
       using (var writer = new StreamWriter(_Config.OutputFilename, false))

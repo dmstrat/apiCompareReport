@@ -9,8 +9,8 @@ namespace EndPointCompare.Generators
   internal class ApiCompareGenerator
   {
     private EndPointCompareConfigResource _Config { get; set; }
-    private string _OldMsiFolderExtractionPoint;// { get; set; }
-    private string _NewMsiFolderExtractionPoint;// { get; set; }
+    private string _OldMsiFolderExtractionPoint;
+    private string _NewMsiFolderExtractionPoint;
 
     public void Generate() //EndPointCompareConfigResource resource)
     {
@@ -33,6 +33,7 @@ namespace EndPointCompare.Generators
       pe.ExtractMsiToDirectory(oldMsiFilename, _OldMsiFolderExtractionPoint);
       pe.ExtractMsiToDirectory(newMsiFilename, _NewMsiFolderExtractionPoint);
 
+      var generatorExeFilename = _Config.ApiReportGeneratorExe;
       foreach (var personaPair in _Config.PersonaPairs)
       {
         Trace.WriteLine("Processing :" + personaPair.Persona + ":");
@@ -45,7 +46,7 @@ namespace EndPointCompare.Generators
         oldFileConfig.OutputFilename = oldOutputFilename.FullName;
         var oldFileConfigFilename = FileHelper.CreateTempFile();
         FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
-        pe.ExecuteEndPointReporter(oldFileConfigFilename);
+        pe.ExecuteEndPointReporter(generatorExeFilename, oldFileConfigFilename);
 
 
         var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
@@ -56,7 +57,7 @@ namespace EndPointCompare.Generators
         newFileConfig.OutputFilename = newOutputFilename.FullName;
         var newFileConfigFilename = FileHelper.CreateTempFile();
         FileHelper.SaveAsJson(newFileConfig, newFileConfigFilename.FullName);
-        pe.ExecuteEndPointReporter(newFileConfigFilename);
+        pe.ExecuteEndPointReporter(generatorExeFilename, newFileConfigFilename);
 
         Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
         Trace.WriteLine("Old Api Report:" + oldOutputFilename);
@@ -69,9 +70,7 @@ namespace EndPointCompare.Generators
 
         Trace.WriteLine("...Completed");
       }
-
     }
-
 
     private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport)
     {
@@ -137,7 +136,6 @@ namespace EndPointCompare.Generators
                 {
                   break;
                 }
-
               }
               var noMatchFound = rightLine == null;
               if (noMatchFound)

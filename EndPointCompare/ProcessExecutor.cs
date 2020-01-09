@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Mime;
 
 namespace EndPointCompare
 {
   internal class ProcessExecutor
   {
-    public void ExecuteEndPointReporter(FileInfo configFilename)
+    public void ExecuteEndPointReporter(string GeneratorExeFilename, FileInfo configFilename)
     {
-      var currentLocation = AppDomain.CurrentDomain.BaseDirectory;
-      var debugExecutableLocation = Path.Combine(currentLocation, "..\\..\\..\\", 
-        "ApiEndPointReportGenerator\\bin\\Debug\\ApiEndPointReportGenerator.exe");
-      var releaseExecutableLocation = Path.Combine(currentLocation, "..\\..\\..\\", 
-        "ApiEndPointReportGenerator\\bin\\Release\\ApiEndPointReportGenerator.exe");
-      var hasDebugExecutable = (new FileInfo(debugExecutableLocation)).Exists;
-      var hasReleaseExecutable = (new FileInfo(releaseExecutableLocation)).Exists;
-      string executable = "fail.exe";
-      if (hasReleaseExecutable)
+      var generatorFileInfo = new FileInfo(GeneratorExeFilename);
+      if (generatorFileInfo.Exists)
       {
-        executable = releaseExecutableLocation;
-      }else if (hasDebugExecutable)
-      {
-        executable = debugExecutableLocation;
+        ExecuteAndWait(generatorFileInfo.FullName, configFilename.FullName);
       }
-      ExecuteAndWait(executable, configFilename.FullName);
+      else
+      {
+        Trace.WriteLine("Report Generator NOT at: " + GeneratorExeFilename);
+      }
     }
 
     public void ExtractMsiToDirectory(string msiFilename, string targetDirectory)

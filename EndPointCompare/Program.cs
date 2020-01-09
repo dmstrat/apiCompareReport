@@ -16,8 +16,8 @@ namespace EndPointCompare
       generator.Generate();
       Trace.WriteLine("Program ENDS...");
 #if DEBUG
-      Console.WriteLine("Press any key to continue...");
-      Console.ReadKey();
+      //Console.WriteLine("Press any key to continue...");
+      //Console.ReadKey();
 #endif
     }
   }
