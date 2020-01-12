@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EndPointCompare.Resources;
+﻿using EndPointCompare.Resources;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace EndPointCompare.Generators
 {
@@ -14,15 +9,20 @@ namespace EndPointCompare.Generators
     public static EndPointCompareConfigResource CreateEndPointCompareConfigResourceSample()
     {
 
-      var retailWebApiPair = new EndPointReportConfigPairResource();
-      retailWebApiPair.Persona = "RetailWebApi";
-      retailWebApiPair.Resource_Old = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_old.rptx");
-      retailWebApiPair.Resource_New = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_new.rptx");
+      var retailWebApiPair = new EndPointReportConfigPairResource
+      {
+        Persona = "RetailWebApi",
+        DeprecatedEndPointReportFilename = "c:\\output\\retailwebapi_deprecated.rpt",
+        NewEndPointReportFilename= "c:\\output\\reatailwebapi_new.rpt",
+        Resource_Old = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_old.rptx"),
+        Resource_New = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_new.rptx")
+      };
       var resource = new EndPointCompareConfigResource
       {
-        msi_old = "C:\\output\\Retail2019.1.0.1.msi",
-        msi_new = "C:\\output\\Retail2020.2.0.0.msi",
-        ApiReportGeneratorExe = 
+        Msi_Old = "C:\\output\\Retail2019.1.0.1.msi",
+        Msi_New = "C:\\output\\Retail2020.2.0.0.msi",
+        ApiReportGeneratorExe =
+          //"C:\\src\\dmstrat\\apiCompareReport\\ApiEndPointReportGenerator\\bin\\Debug\\ApiEndPointReportGenerator.exe"
           "C:\\src\\dmstrat\\apiCompareReport\\ApiEndPointReportGenerator\\bin\\Debug\\ApiEndPointReportGenerator.exe"
       };
       resource.PersonaPairs.Add(retailWebApiPair);

@@ -30,11 +30,10 @@ namespace ApiEndPointReportGenerator
         throw new ArgumentNullException(nameof(type));
       }
 
-      Func<MethodInfo, bool> noCustomAttributesCreatedByCompiler =
-        m => !m.GetCustomAttributes(true).Any(a => a is CompilerGeneratedAttribute);
+      bool NoCustomAttributesCreatedByCompiler(MethodInfo m) => !m.GetCustomAttributes(true).Any(a => a is CompilerGeneratedAttribute);    
 
       return type.GetMethods(_AllScopes)
-        .Where(noCustomAttributesCreatedByCompiler)
+        .Where((Func<MethodInfo, bool>) NoCustomAttributesCreatedByCompiler)
         .Where(i => i.DeclaringType.FullName.Contains(controllerNamespace));
     }
   }

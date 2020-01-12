@@ -1,16 +1,19 @@
 ﻿using EndPointCompare.Helpers;
 using EndPointCompare.Resources;
 using System;
+using System.CodeDom;
 using System.Diagnostics;
 using System.IO;
 
 namespace EndPointCompare.Generators
 {
-  internal class ApiCompareGenerator
+  public class ApiCompareGenerator
   {
     private EndPointCompareConfigResource _Config { get; set; }
     private string _OldMsiFolderExtractionPoint;
     private string _NewMsiFolderExtractionPoint;
+
+    public const string BaseRouteWithoutVersion = "~/api/";
 
     public void Generate() //EndPointCompareConfigResource resource)
     {
@@ -22,12 +25,14 @@ namespace EndPointCompare.Generators
 
       //pre-extraction setup
       _OldMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
+      //_Config.Msi_Old_ExtractionPoint = _OldMsiFolderExtractionPoint;
       Trace.WriteLine("Old MSI Extraction point: " + _OldMsiFolderExtractionPoint);
       _NewMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
+      //_Config.Msi_New_ExtractionPoint = _NewMsiFolderExtractionPoint;
       Trace.WriteLine("New MSI Extraction point: " + _NewMsiFolderExtractionPoint);
 
-      var oldMsiFilename = _Config.msi_old;
-      var newMsiFilename = _Config.msi_new;
+      var oldMsiFilename = _Config.Msi_Old;
+      var newMsiFilename = _Config.Msi_New;
       //extract msi to temp directories
       var pe = new ProcessExecutor();
       pe.ExtractMsiToDirectory(oldMsiFilename, _OldMsiFolderExtractionPoint);
@@ -48,7 +53,6 @@ namespace EndPointCompare.Generators
         FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
         pe.ExecuteEndPointReporter(generatorExeFilename, oldFileConfigFilename);
 
-
         var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
           personaPair.Resource_New.SourceFilenameOnly);
         var newFileConfig = personaPair.Resource_New;
@@ -63,35 +67,37 @@ namespace EndPointCompare.Generators
         Trace.WriteLine("Old Api Report:" + oldOutputFilename);
         Trace.WriteLine("New Api Report: " + newOutputFilename);
         //do compare
-        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldOutputFilename, newOutputFilename);
+        var deprecatedReportFilename = personaPair.DeprecatedEndPointReportFilename;
+        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldOutputFilename, 
+                                                                       newOutputFilename, 
+                                                                       deprecatedReportFilename );
         Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
-        var newReport = GenerateNewEndPointsReport(oldOutputFilename, newOutputFilename);
+        var newReportFilename = personaPair.NewEndPointReportFilename;
+        var newReport = GenerateNewEndPointsReport(oldOutputFilename, newOutputFilename, newReportFilename);
         Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
 
         Trace.WriteLine("...Completed");
       }
     }
 
-    private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport)
+    private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport, string outputReportFilename)
     {
-      var oldVersionBaseRoute = "~/api/v1-beta6/";
-      var newVersionBaseRoute = "~/api/v1/";
       string newLineOriginal, newLine, oldLine;
 
-      var newReport = new FileInfo(Path.GetTempFileName());
+      var newReport = new FileInfo(outputReportFilename);
       //loop through each new record trying to find a match in the old, no match means new route/method
-      using (StreamWriter reportStream = new StreamWriter(newReport.FullName, true))
+      using (StreamWriter reportStream = new StreamWriter(newReport.FullName, false))
       {
         using (StreamReader newStream = new StreamReader(newFileReport.FullName))
         {
           while ((newLineOriginal = newStream.ReadLine()) != null)
           {
-            newLine = StripBaseRouteFromString(newLineOriginal, newVersionBaseRoute);// leftLineOriginal.Substring(leftVersionBaseRoute.Length);
+            newLine = StripBaseRouteFromString(newLineOriginal);
             using (StreamReader oldStream = new StreamReader(oldFileReport.FullName))
             {
               while ((oldLine = oldStream.ReadLine()) != null)
               {
-                oldLine = StripBaseRouteFromString(oldLine, oldVersionBaseRoute);
+                oldLine = StripBaseRouteFromString(oldLine);
                 var bothLinesMatch = newLine.Equals(oldLine, StringComparison.InvariantCultureIgnoreCase);
                 if (bothLinesMatch)
                 {
@@ -110,27 +116,25 @@ namespace EndPointCompare.Generators
       }
       return newReport;
     }
-
-    private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport)
+    //TODO: deduplicate these two methods as they do the same thing, but opposit source direction ONLY.
+    private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
     {
-      var leftVersionBaseRoute = "~/api/v1-beta6/";
-      var rightVersionBaseRoute = "~/api/v1/";
       string leftLineOriginal, leftLine, rightLine;
 
-      var deprecatedReport = new FileInfo(Path.GetTempFileName());
+      var deprecatedReport = new FileInfo(outputReportFilename);
       //loop through each left record trying to find a match in the right, no match means deprecated route/method
-      using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName, true))
+      using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName, false))
       {
         using (StreamReader leftStream = new StreamReader(leftFileReport.FullName))
         {
           while ((leftLineOriginal = leftStream.ReadLine()) != null)
           {
-            leftLine = StripBaseRouteFromString(leftLineOriginal, leftVersionBaseRoute);// leftLineOriginal.Substring(leftVersionBaseRoute.Length);
+            leftLine = StripBaseRouteFromString(leftLineOriginal);
             using (StreamReader rightStream = new StreamReader(rightFileReport.FullName))
             {
               while ((rightLine = rightStream.ReadLine()) != null)
               {
-                rightLine = StripBaseRouteFromString(rightLine, rightVersionBaseRoute);
+                rightLine = StripBaseRouteFromString(rightLine);
                 var bothLinesMatch = leftLine.Equals(rightLine, StringComparison.InvariantCultureIgnoreCase);
                 if (bothLinesMatch)
                 {
@@ -149,16 +153,13 @@ namespace EndPointCompare.Generators
       return deprecatedReport;
     }
 
-    private static string StripBaseRouteFromString(string sourceLine, string baseRouteToStripOut)
+    public static string StripBaseRouteFromString(string sourceLine)
     {
-      var sourceLongEnough = sourceLine.Length > baseRouteToStripOut.Length;
-      if (sourceLongEnough)
+      var pointAfterVersion = sourceLine.IndexOf("/", BaseRouteWithoutVersion.Length, StringComparison.CurrentCultureIgnoreCase);
+      var pointPositionIsValid = pointAfterVersion > 0;
+      if (pointPositionIsValid)
       {
-        var hasBaseRoute = sourceLine.Substring(0, baseRouteToStripOut.Length).Equals(baseRouteToStripOut);
-        if (hasBaseRoute)
-        {
-          return sourceLine.Substring(baseRouteToStripOut.Length);
-        }
+        return sourceLine.Substring(pointAfterVersion);
       }
       return sourceLine;
     }

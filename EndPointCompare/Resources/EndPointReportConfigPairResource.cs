@@ -10,6 +10,9 @@ namespace EndPointCompare.Resources
 
     }
     public string Persona { get; set; }
+    public string DeprecatedEndPointReportFilename { get; set; } 
+    public string NewEndPointReportFilename { get; set; }        
+
     public EndPointReportConfigResource Resource_Old { get; set; }
     public EndPointReportConfigResource Resource_New { get; set; }
   }

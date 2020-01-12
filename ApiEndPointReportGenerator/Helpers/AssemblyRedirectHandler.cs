@@ -10,17 +10,13 @@ namespace ApiEndPointReportGenerator.Helpers
   {
     public static void RedirectAssembly(string shortName, Version targetVersion, string publicKeyToken)
     {
-      ResolveEventHandler handler = null;
-
-      handler = (sender, args) =>
+      Assembly Handler(object sender, ResolveEventArgs args)
       {
         // Use latest strong name & version when trying to load SDK assemblies
         var requestedAssembly = new AssemblyName(args.Name);
-        if (requestedAssembly.Name != shortName)
-          return null;
+        if (requestedAssembly.Name != shortName) return null;
 
-        Debug.WriteLine("Redirecting assembly load of " + args.Name
-          + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
+        Debug.WriteLine("Redirecting assembly load of " + args.Name + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
 
         var alreadyLoadedAssembly = AppDomain.CurrentDomain.GetAssemblies()
           .FirstOrDefault(a => a.GetName().Name == requestedAssembly.Name);
@@ -37,8 +33,9 @@ namespace ApiEndPointReportGenerator.Helpers
         //AppDomain.CurrentDomain.AssemblyResolve -= handler;
 
         return Assembly.Load(requestedAssembly);
-      };
-      AppDomain.CurrentDomain.AssemblyResolve += handler;
+      }
+
+      AppDomain.CurrentDomain.AssemblyResolve += Handler;
     }
   }
 }

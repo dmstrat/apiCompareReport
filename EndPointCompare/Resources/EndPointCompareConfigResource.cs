@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace EndPointCompare.Resources
 {
@@ -14,8 +10,10 @@ namespace EndPointCompare.Resources
     }
 
     public string ApiReportGeneratorExe { get; set; }
-    public string msi_old { get; set; }
-    public string msi_new { get; set; }
+    public string Msi_Old { get; set; }
+    public string Msi_Old_ExtractionPoint { get; set; }
+    public string Msi_New { get; set; }
+    public string Msi_New_ExtractionPoint { get; set; }
     public IList<EndPointReportConfigPairResource> PersonaPairs { get; set; }
   }
 }

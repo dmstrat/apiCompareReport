@@ -8,14 +8,18 @@ namespace Core.Generators
   {
     public static EndPointReportConfigResource GenerateEndPointReportConfigResource(string reportName = "retailwebapi.rptx")
     {
-      var resource = new EndPointReportConfigResource();
-      resource.SourceFilenameOnly = "RetailWebApi.dll";
-      resource.SourceFilename = "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll";
-      resource.InstallationDirectory = "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\";
-      resource.OutputFilename = "c:\\output\\" + reportName;
-      resource.ControllerNamespace = "RP.RetailWebApi";
-      resource.HelpPageControllerNamespaceToAvoid = "RP.RetailWebApi.Areas.HelpPage";
-      resource.BaseControllerName = "BaseWebRetailWebApiController";
+      var resource = new EndPointReportConfigResource
+      {
+        SourceFilenameOnly = "RetailWebApi.dll",
+        SourceFilename =
+          "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
+        InstallationDirectory = "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
+        ConfigFileRelativeToInstall = "..\\web.config",
+        OutputFilename = "c:\\output\\" + reportName,
+        ControllerNamespace = "RP.RetailWebApi",
+        HelpPageControllerNamespaceToAvoid = "RP.RetailWebApi.Areas.HelpPage",
+        BaseControllerName = "BaseWebRetailWebApiController"
+      };
       var assemblySystemWebHttp = new AssemblyNeeded()
       {
         Name = "System.Web.Http",

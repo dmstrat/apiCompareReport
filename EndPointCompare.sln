@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiEndPointReportGenerator"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{B429C2D3-8835-4A8F-BFAF-0BC81C043D00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiEndPointReportGenerator.Unit.Tests", "ApiEndPointReportGenerator.Unit.Tests\ApiEndPointReportGenerator.Unit.Tests.csproj", "{36B2BAA6-A3A9-4D8D-A051-6A3235EF0040}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{B429C2D3-8835-4A8F-BFAF-0BC81C043D00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B429C2D3-8835-4A8F-BFAF-0BC81C043D00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B429C2D3-8835-4A8F-BFAF-0BC81C043D00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36B2BAA6-A3A9-4D8D-A051-6A3235EF0040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36B2BAA6-A3A9-4D8D-A051-6A3235EF0040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36B2BAA6-A3A9-4D8D-A051-6A3235EF0040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36B2BAA6-A3A9-4D8D-A051-6A3235EF0040}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

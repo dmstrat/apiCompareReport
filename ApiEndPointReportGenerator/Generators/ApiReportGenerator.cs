@@ -7,24 +7,114 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Xml;
 
 namespace ApiEndPointReportGenerator.Generators
 {
-  internal class ApiReportGenerator
+  public class ApiReportGenerator
   {
-    private EndPointReportConfigResource _Config;
+    public EndPointReportConfigResource Config;
+    public const string XpathForWebOrAppConfigToRuntimeElement = "configuration/runtime";
+    public const string AssemblyBindingNodeName = "assemblyBinding";
+    public const string DependentAssemblyNodeName = "dependentAssembly";
+    public const string AssemblyIdentityNodeName = "assemblyIdentity";
+    public const string BindingRedirectNodeName = "bindingRedirect";
+    public const string AssemblyIdentityNameAttribute = "name";
+    public const string AssemblyIdentityPublicKeyAttribute = "publicKeyToken";
+    public const string BindingRedirectVersionAttribute = "newVersion";
+
     public void Generate(FileInfo configResourceFileInfo)
     {
-      _Config = ResourceHelper.GenerateResourceFromFile(configResourceFileInfo);
-      BuildRedirectAssemblies();
+      Config = ResourceHelper.GenerateResourceFromFile(configResourceFileInfo);
+      var webOrAppConfigFilename =
+        GenerateWebOrAppConfigFromConfiguration(Config.SourceFilename, Config.ConfigFileRelativeToInstall);
+      var redirectAssembliesNeeded = GenerateRedirectAssembliesList(webOrAppConfigFilename);
+      ApplyRedirectAssemblies(redirectAssembliesNeeded);
       var controllers = GetControllersFromAssembly();
       var report = GenerateReport(controllers);
       SaveReportToOutputFile(report);
     }
 
-    private void BuildRedirectAssemblies()
+    public string GenerateWebOrAppConfigFromConfiguration(string sourceFilename, string configFileRelativeToInstall)
     {
-      foreach (var assemblyNeeded in _Config.AssembliesNeeded)
+      var sourceFilenamePath = Path.GetDirectoryName(Config.SourceFilename);
+      var webOrAppConfigFilename = Path.Combine(sourceFilenamePath, Config.ConfigFileRelativeToInstall);
+      return webOrAppConfigFilename;
+    }
+
+    public IEnumerable<AssemblyNeeded> GenerateRedirectAssembliesList(string webOrAppConfigFilename)
+    {
+      var configFile = new XmlDocument();
+      configFile.Load(webOrAppConfigFilename);
+      var runtimeList = configFile.SelectNodes(XpathForWebOrAppConfigToRuntimeElement);
+
+      var assemblyNeededList = new List<AssemblyNeeded>();
+
+      for (int x = 0; x < runtimeList.Count; x++)
+      {
+        for (int z = 0; z < runtimeList.Item(x).ChildNodes.Count; z++)
+        {
+          var isAssemblyBindingNode = runtimeList.Item(x).ChildNodes[z].Name == AssemblyBindingNodeName;
+          if (isAssemblyBindingNode)
+          {
+            var assemblyBindingItem = runtimeList.Item(x).ChildNodes[z];
+            for (int y = 0; y < assemblyBindingItem.ChildNodes.Count; y++)
+            {
+              var isDependentAssemblyNode = assemblyBindingItem.ChildNodes[y].Name == DependentAssemblyNodeName;
+              if (isDependentAssemblyNode)
+              {
+                var dependentAssemblyItem = assemblyBindingItem.ChildNodes[y];
+                var assemblyIdentityPointer = -1;
+                var bindingRedirectPointer = -1;
+                for (int i = 0; i < dependentAssemblyItem.ChildNodes.Count; i++)
+                {
+                  var thisChildIsTheAssemblyIdentityNode =
+                    dependentAssemblyItem.ChildNodes[i].Name == AssemblyIdentityNodeName;
+                  if (thisChildIsTheAssemblyIdentityNode)
+                  {
+                    assemblyIdentityPointer = i;
+                  }
+
+                  var thisChildIsTheBindingRedirect = dependentAssemblyItem.ChildNodes[i].Name == BindingRedirectNodeName;
+                  if (thisChildIsTheBindingRedirect)
+                  {
+                    bindingRedirectPointer = i;
+                  }
+                }
+
+                var validEntryToAdd = bindingRedirectPointer > -1 && assemblyIdentityPointer > -1;
+                if (validEntryToAdd)
+                {
+                  var xmlAssemblyIdentityAttributeCollection =
+                    dependentAssemblyItem.ChildNodes[assemblyIdentityPointer].Attributes;
+                  var xmlBindingRedirectAttributeCollection =
+                    dependentAssemblyItem.ChildNodes[bindingRedirectPointer].Attributes;
+                  var validEntryAvailable = xmlAssemblyIdentityAttributeCollection != null &&
+                                            xmlBindingRedirectAttributeCollection != null;
+                  if (validEntryAvailable)
+                  {
+                    var assemblyNeeded = new AssemblyNeeded()
+                    {
+                      Name = xmlAssemblyIdentityAttributeCollection[AssemblyIdentityNameAttribute].Value,
+                      PublicKey = xmlAssemblyIdentityAttributeCollection[AssemblyIdentityPublicKeyAttribute]
+                        .Value,
+                      Version = xmlBindingRedirectAttributeCollection[BindingRedirectVersionAttribute].Value,
+                    };
+                    assemblyNeededList.Add(assemblyNeeded);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return assemblyNeededList;
+    }
+
+    private void ApplyRedirectAssemblies(IEnumerable<AssemblyNeeded> assembliesNeeded)
+    {
+
+      foreach (var assemblyNeeded in assembliesNeeded)
       {
         var version = new Version(assemblyNeeded.Version);
         AssemblyRedirectHandler.RedirectAssembly(assemblyNeeded.Name, version, assemblyNeeded.PublicKey);
@@ -33,11 +123,11 @@ namespace ApiEndPointReportGenerator.Generators
 
     private IEnumerable<Type> GetControllersFromAssembly()
     {
-      var apiClasses = Assembly.LoadFrom(_Config.SourceFilename)
+      var apiClasses = Assembly.LoadFrom(Config.SourceFilename)
         .GetTypes()
         .Where(t => t.IsNotCompilerGenerated() && !t.IsEnum && t.IsClass);
 
-      IEnumerable<Type> controllers = GetAllRelevantControllerClasses(apiClasses, _Config.ControllerNamespace, _Config.BaseControllerName);
+      IEnumerable<Type> controllers = GetAllRelevantControllerClasses(apiClasses, Config.ControllerNamespace, Config.BaseControllerName);
       return controllers;
     }
 
@@ -47,8 +137,8 @@ namespace ApiEndPointReportGenerator.Generators
 
       foreach (var controller in controllers)
       {
-        var controllerMethods = controller.GetAllMethodsCreatedByHumans(_Config.ControllerNamespace)
-          .Where(i => i.IsPublic && !i.DeclaringType.FullName.Contains(_Config.HelpPageControllerNamespaceToAvoid));
+        var controllerMethods = controller.GetAllMethodsCreatedByHumans(Config.ControllerNamespace)
+          .Where(i => i.IsPublic && !i.DeclaringType.FullName.Contains(Config.HelpPageControllerNamespaceToAvoid));
 
         foreach (var myMethod in controllerMethods)
         {
@@ -117,10 +207,10 @@ namespace ApiEndPointReportGenerator.Generators
       }
       return newRoutes;
     }
-    
+
     private void SaveReportToOutputFile(IList<Tuple<string, string, bool>> routes)
     {
-      using (var writer = new StreamWriter(_Config.OutputFilename, false))
+      using (var writer = new StreamWriter(Config.OutputFilename, false))
       {
         foreach (var route in routes)
         {
