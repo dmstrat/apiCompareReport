@@ -1,0 +1,64 @@
+{
+	"ApiReportGeneratorExe": "C:\\src\\dmstrat\\apiCompareReport\\ApiEndPointReportGenerator\\bin\\Debug\\ApiEndPointReportGenerator.exe",
+	"Msi_Old": "C:\\output\\Retail2019.1.0.1.msi",
+	"Msi_Old_ExtractionPoint": null,
+	"Msi_New": "C:\\output\\Retail2020.2.0.0.msi",
+	"Msi_New_ExtractionPoint": null,
+	"PersonaPairs": [
+		{
+			"Persona": "RetailWebApi",
+			"DeprecatedEndPointReportFilename": "c:\\output\\retailwebapi_deprecated.rpt",
+			"NewEndPointReportFilename": "c:\\output\\reatailwebapi_new.rpt",
+			"Resource_Old": {
+				"SourceFilenameOnly": "RetailWebApi.dll",
+				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
+				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
+				"ConfigFileRelativeToInstall": "..\\web.config",
+				"OutputFilename": "c:\\output\\retailwebapi_old.rptx",
+				"ControllerNamespace": "RP.RetailWebApi",
+				"HelpPageControllerNamespaceToAvoid": "RP.RetailWebApi.Areas.HelpPage",
+				"BaseControllerName": "BaseWebRetailWebApiController",
+				"AssembliesNeeded": []
+			},
+			"Resource_New": {
+				"SourceFilenameOnly": "RetailWebApi.dll",
+				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
+				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
+				"ConfigFileRelativeToInstall": "..\\web.config",
+				"OutputFilename": "c:\\output\\retailwebapi_new.rptx",
+				"ControllerNamespace": "RP.RetailWebApi",
+				"HelpPageControllerNamespaceToAvoid": "RP.RetailWebApi.Areas.HelpPage",
+				"BaseControllerName": "BaseWebRetailWebApiController",
+				"AssembliesNeeded": []
+			}
+		},
+		{
+			"Persona": "WfmAdminApi",
+			"DeprecatedEndPointReportFilename": "c:\\output\\wfmadminapi_deprecated.rpt",
+			"NewEndPointReportFilename": "c:\\output\\wfmadminapi_new.rpt",
+			"Resource_Old": {
+				"SourceFilenameOnly": "WfmAdminApi.dll",
+				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\WfmAdminApi.dll",
+				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\",
+				"ConfigFileRelativeToInstall": "..\\web.config",
+				"OutputFilename": "c:\\output\\wfmadminapi_old.rptx",
+				"ControllerNamespace": "RP.WfmAdminApi",
+				"HelpPageControllerNamespaceToAvoid": "RP.WfmAdminApi.Areas.HelpPage",
+				"BaseControllerName": "BaseWebWfmAdminApiController",
+				"AssembliesNeeded": []
+			},
+			"Resource_New": {
+				"SourceFilenameOnly": "WfmAdminApi.dll",
+				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\WfmAdminApi.dll",
+				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\",
+				"ConfigFileRelativeToInstall": "..\\web.config",
+				"OutputFilename": "c:\\output\\wfmadminapi_new.rptx",
+				"ControllerNamespace": "RP.WfmAdminApi",
+				"HelpPageControllerNamespaceToAvoid": "RP.WfmAdminApi.Areas.HelpPage",
+				"BaseControllerName": "BaseWebWfmAdminApiController",
+				"AssembliesNeeded": []
+			}
+		}
+		
+	]
+}

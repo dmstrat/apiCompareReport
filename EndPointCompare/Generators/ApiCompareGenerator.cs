@@ -1,7 +1,6 @@
 ﻿using EndPointCompare.Helpers;
 using EndPointCompare.Resources;
 using System;
-using System.CodeDom;
 using System.Diagnostics;
 using System.IO;
 
@@ -15,10 +14,13 @@ namespace EndPointCompare.Generators
 
     public const string BaseRouteWithoutVersion = "~/api/";
 
-    public void Generate() //EndPointCompareConfigResource resource)
+    public void Generate(string configFilename) //EndPointCompareConfigResource resource)
     {
-      _Config = SampleGenerator
-        .CreateEndPointCompareConfigResourceSample(); // new EndPointCompareConfigResource();//TODO: Fix!!! resource;
+      var configFileInfo = new FileInfo(configFilename);
+      var config = FileHelper.LoadInputFile(configFileInfo);
+      _Config = config;
+      //_Config = SampleGenerator
+        //.CreateEndPointCompareConfigResourceSample(); // new EndPointCompareConfigResource();//TODO: Fix!!! resource;
 
       var baseOutputDirectory = "c:\\output\\";
       FileHelper.EnsureDirectoryExists(baseOutputDirectory);
@@ -116,7 +118,7 @@ namespace EndPointCompare.Generators
       }
       return newReport;
     }
-    //TODO: deduplicate these two methods as they do the same thing, but opposit source direction ONLY.
+    //TODO: deduplicate these two methods as they do the same thing, but opposite source direction ONLY.
     private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
     {
       string leftLineOriginal, leftLine, rightLine;

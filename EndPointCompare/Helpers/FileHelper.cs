@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using EndPointCompare.Resources;
 using Newtonsoft.Json;
+using System.Runtime.Serialization.Json;
 
 namespace EndPointCompare.Helpers
 {
@@ -17,24 +19,22 @@ namespace EndPointCompare.Helpers
       }
     }
 
-    /*
-    private void LoadInputFile(string moduleName, Type jsonContractType,  FileInfo executionConfigFileInfo)
+    public static EndPointCompareConfigResource LoadInputFile(FileInfo executionConfigFileInfo)
     {
-      Trace.Write($"{moduleName} Checking input file by loading to associated class....");
+      EndPointCompareConfigResource configResource = new EndPointCompareConfigResource();
+      Trace.Write($"Checking input file by loading to associated class....");
       try
       {
         using (var stream = new StreamReader(executionConfigFileInfo.FullName))
         {
-          var ser = new DataContractJsonSerializer(jsonContractType),
+          var ser = new DataContractJsonSerializer(typeof(EndPointCompareConfigResource),
             new DataContractJsonSerializerSettings() { UseSimpleDictionaryFormat = true });
-          _ConfigResource = ser.ReadObject(stream.BaseStream) as ApiEndPointerReporterConfigResource;
-          var fileFailedToSerialize = _ConfigResource == null;
+          configResource = ser.ReadObject(stream.BaseStream) as EndPointCompareConfigResource;
+          var fileFailedToSerialize = configResource == null;
           if (fileFailedToSerialize)
           {
-            throw new CustomApplicationException<EndPointReportErrors>(EndPointReportErrors
-              .ConfigFileFailedToSerialize);
+            throw new Exception("Failed to read json file to object");
           }
-          _JenkinsContext = _ConfigResource.MyJenkinsContext;
         }
       }
       catch (Exception e)
@@ -44,8 +44,8 @@ namespace EndPointCompare.Helpers
         throw;
       }
       Trace.WriteLine("...Completed.");
+      return configResource;
     }
-    */
 
     public static string GenerateTempDirectoryInOutput()
     {
