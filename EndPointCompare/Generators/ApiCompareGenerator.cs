@@ -161,12 +161,20 @@ namespace EndPointCompare.Generators
 
     public static string StripBaseRouteFromString(string sourceLine)
     {
-      var pointAfterVersion = sourceLine.IndexOf("/", BaseRouteWithoutVersion.Length, StringComparison.CurrentCultureIgnoreCase);
-      var pointPositionIsValid = pointAfterVersion > 0;
-      if (pointPositionIsValid)
+      var pointerAfterBaseRouteInString = sourceLine.IndexOf(BaseRouteWithoutVersion, StringComparison.CurrentCultureIgnoreCase);
+
+      var hasBaseRouteInSourceLine = pointerAfterBaseRouteInString > -1;
+      if (hasBaseRouteInSourceLine)
       {
-        return sourceLine.Substring(pointAfterVersion);
+        var pointAfterVersion =
+          sourceLine.IndexOf("/", BaseRouteWithoutVersion.Length, StringComparison.CurrentCultureIgnoreCase);
+        var pointPositionIsValid = pointAfterVersion > 0;
+        if (pointPositionIsValid)
+        {
+          return sourceLine.Substring(pointAfterVersion);
+        }
       }
+
       return sourceLine;
     }
   }
