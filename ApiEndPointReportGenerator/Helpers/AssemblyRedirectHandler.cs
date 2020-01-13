@@ -16,7 +16,6 @@ namespace ApiEndPointReportGenerator.Helpers
         var requestedAssembly = new AssemblyName(args.Name);
         if (requestedAssembly.Name != shortName) return null;
 
-        Debug.WriteLine("Redirecting assembly load of " + args.Name + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
 
         var alreadyLoadedAssembly = AppDomain.CurrentDomain.GetAssemblies()
           .FirstOrDefault(a => a.GetName().Name == requestedAssembly.Name);
@@ -25,6 +24,7 @@ namespace ApiEndPointReportGenerator.Helpers
         {
           return alreadyLoadedAssembly;
         }
+        Debug.WriteLine("Redirecting assembly load of " + args.Name + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
 
         requestedAssembly.Version = targetVersion;
         requestedAssembly.SetPublicKeyToken(new AssemblyName("x, PublicKeyToken=" + publicKeyToken).GetPublicKeyToken());

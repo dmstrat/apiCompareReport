@@ -2,6 +2,7 @@
 using Core.Resources;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace ApiEndPointReportGenerator.Generators
       var redirectAssembliesNeeded = GenerateRedirectAssembliesList(webOrAppConfigFilename);
       ApplyRedirectAssemblies(redirectAssembliesNeeded);
       var controllers = GetControllersFromAssembly();
+      Trace.WriteLine("Pre-Report: " + Config.SourceFilenameOnly + " :Controller Count:" + controllers.Count());
       var report = GenerateReport(controllers);
       SaveReportToOutputFile(report);
     }

@@ -27,19 +27,23 @@ namespace EndPointCompare.Generators
 
       //pre-extraction setup
       _OldMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
-      //_Config.Msi_Old_ExtractionPoint = _OldMsiFolderExtractionPoint;
+      _Config.Msi_Old_ExtractionPoint = _OldMsiFolderExtractionPoint;
       Trace.WriteLine("Old MSI Extraction point: " + _OldMsiFolderExtractionPoint);
       _NewMsiFolderExtractionPoint = FileHelper.GenerateTempDirectoryInOutput();
-      //_Config.Msi_New_ExtractionPoint = _NewMsiFolderExtractionPoint;
+      _Config.Msi_New_ExtractionPoint = _NewMsiFolderExtractionPoint;
       Trace.WriteLine("New MSI Extraction point: " + _NewMsiFolderExtractionPoint);
+
+      //_OldMsiFolderExtractionPoint = config.Msi_Old_ExtractionPoint;
+      //_NewMsiFolderExtractionPoint = config.Msi_New_ExtractionPoint;
 
       var oldMsiFilename = _Config.Msi_Old;
       var newMsiFilename = _Config.Msi_New;
       //extract msi to temp directories
+      
       var pe = new ProcessExecutor();
       pe.ExtractMsiToDirectory(oldMsiFilename, _OldMsiFolderExtractionPoint);
       pe.ExtractMsiToDirectory(newMsiFilename, _NewMsiFolderExtractionPoint);
-
+     
       var generatorExeFilename = _Config.ApiReportGeneratorExe;
       foreach (var personaPair in _Config.PersonaPairs)
       {
