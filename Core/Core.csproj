@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generators\SampleGenerator.cs" />
+    <Compile Include="Helpers\FileHelper.cs" />
+    <Compile Include="Resources\ApiEndPointReport.cs" />
+    <Compile Include="Resources\ApiEndPointReportRow.cs" />
     <Compile Include="Resources\AssemblyNeeded.cs" />
     <Compile Include="Resources\EndPointReportConfigResource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,5 +56,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

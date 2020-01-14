@@ -16,8 +16,8 @@ namespace ApiEndPointReportGenerator.Helpers
       using (StreamReader r = new StreamReader(resourceFileInfo.FullName))
       {
         var json = r.ReadToEnd();
-        var config = JsonConvert.DeserializeObject<EndPointReportConfigResource>(json);
-        return config;
+        var resource = JsonConvert.DeserializeObject<EndPointReportConfigResource>(json);
+        return resource;
       }
     }
   }

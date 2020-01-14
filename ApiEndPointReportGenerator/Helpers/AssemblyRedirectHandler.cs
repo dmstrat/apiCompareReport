@@ -30,7 +30,7 @@ namespace ApiEndPointReportGenerator.Helpers
         requestedAssembly.SetPublicKeyToken(new AssemblyName("x, PublicKeyToken=" + publicKeyToken).GetPublicKeyToken());
         requestedAssembly.CultureInfo = CultureInfo.InvariantCulture;
 
-        //AppDomain.CurrentDomain.AssemblyResolve -= handler;
+        //AppDomain.CurrentDomain.AssemblyResolve -= Handler;
 
         return Assembly.Load(requestedAssembly);
       }

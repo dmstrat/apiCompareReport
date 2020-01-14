@@ -10,16 +10,7 @@ namespace EndPointCompare.Helpers
 {
   public static class FileHelper
   {
-    public static void SaveAsJson(object resource, string saveFilename)
-    {
-      using (StreamWriter sw = File.CreateText(saveFilename))
-      {
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.Serialize(sw, resource);
-      }
-    }
-
-    public static EndPointCompareConfigResource LoadInputFile(FileInfo executionConfigFileInfo)
+    public static EndPointCompareConfigResource LoadJsonFile(FileInfo executionConfigFileInfo)
     {
       EndPointCompareConfigResource configResource = new EndPointCompareConfigResource();
       Trace.Write($"Checking input file by loading to associated class....");

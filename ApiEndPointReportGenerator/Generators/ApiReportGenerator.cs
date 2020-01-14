@@ -133,9 +133,9 @@ namespace ApiEndPointReportGenerator.Generators
       return controllers;
     }
 
-    private IList<Tuple<string, string, bool>> GenerateReport(IEnumerable<Type> controllers)
+    private ApiEndPointReport GenerateReport(IEnumerable<Type> controllers)
     {
-      var routes = new List<Tuple<string, string, bool>>();
+      var report = new ApiEndPointReport();
 
       foreach (var controller in controllers)
       {
@@ -145,78 +145,66 @@ namespace ApiEndPointReportGenerator.Generators
         foreach (var myMethod in controllerMethods)
         {
           var newRoutes = GenerateRouteEntriesFromMethod(myMethod);
-          routes.AddRange(newRoutes);
-          /*
-          var methodHasRouteeAttribute = myMethod
-                                           .GetCustomAttributes(typeof(RouteAttribute), false).Length > 0;
-          if (methodHasRouteeAttribute)
-          {
-
-            var routeAttributes = myMethod.GetCustomAttributes(typeof(RouteAttribute), false);
-            bool isIgnoredByAutoDoc = false;
-            var ignoreAttributes = myMethod.GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), false);
-            var hasIgnoreAttributes = ignoreAttributes.Length > 0;
-            if (hasIgnoreAttributes)
-            {
-              isIgnoredByAutoDoc = ((ApiExplorerSettingsAttribute)ignoreAttributes[0]).IgnoreApi == true;
-            }
-
-            var methodSignature = MethodSignature(myMethod);
-            foreach (var routeAttribute in routeAttributes)
-            {
-              var routeAttributeCast = (RouteAttribute)routeAttribute;
-              var newEntry = new Tuple<string, string, bool>(routeAttributeCast.Template, methodSignature, isIgnoredByAutoDoc);
-              routes.Add(newEntry);
-            }
-          }*/
+          report.Rows.AddRange(newRoutes);
         }
       }
 
-      routes.Sort((x, y) =>
+      report.Rows.Sort((x, y) =>
       {
         if (x == null) throw new ArgumentNullException(nameof(x));
-        return String.Compare(x.Item1, y.Item1, StringComparison.Ordinal);
+        return String.Compare(x.Route, y.Route, StringComparison.Ordinal);
       });
 
-      return routes;
+      return report;
     }
 
-    private List<Tuple<string, string, bool>> GenerateRouteEntriesFromMethod(MethodInfo myMethod)
+    private IList<ApiEndPointReportRow> GenerateRouteEntriesFromMethod(MethodInfo myMethod)
     {
-      var newRoutes = new List<Tuple<string, string, bool>>();
+      var newRoutes = new List<ApiEndPointReportRow>();
 
-      var methodHasRouteeAttribute = myMethod
-        .GetCustomAttributes(typeof(RouteAttribute), false).Length > 0;
+      var methodHasRouteeAttribute = myMethod.GetCustomAttributes(typeof(RouteAttribute), false).Length > 0;
       if (methodHasRouteeAttribute)
       {
+        var isIgnoredByAutoDoc = GetIsIgnoredByAutoDoc(myMethod);
+
+        var methodSignature = GenerateMethodSignature(myMethod);
 
         var routeAttributes = myMethod.GetCustomAttributes(typeof(RouteAttribute), false);
-        bool isIgnoredByAutoDoc = false;
-        var ignoreAttributes = myMethod.GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), false);
-        var hasIgnoreAttributes = ignoreAttributes.Length > 0;
-        if (hasIgnoreAttributes)
-        {
-          isIgnoredByAutoDoc = ((ApiExplorerSettingsAttribute)ignoreAttributes[0]).IgnoreApi == true;
-        }
-
-        var methodSignature = MethodSignature(myMethod);
         foreach (var routeAttribute in routeAttributes)
         {
           var routeAttributeCast = (RouteAttribute)routeAttribute;
-          var newEntry = new Tuple<string, string, bool>(routeAttributeCast.Template, methodSignature, isIgnoredByAutoDoc);
+          var newEntry = new ApiEndPointReportRow
+          {
+            Route = routeAttributeCast.Template,
+            MethodSignature = methodSignature,
+            IgnoreFromAutoDocs = isIgnoredByAutoDoc
+          };
           newRoutes.Add(newEntry);
         }
       }
       return newRoutes;
     }
 
-    private void SaveReportToOutputFile(IList<Tuple<string, string, bool>> routes)
+    private static bool GetIsIgnoredByAutoDoc(MethodInfo myMethod)
+    {
+      bool isIgnoredByAutoDoc = false;
+      var ignoreAttributes = myMethod.GetCustomAttributes(typeof(ApiExplorerSettingsAttribute), false);
+      var hasIgnoreAttributes = ignoreAttributes.Length > 0;
+      if (hasIgnoreAttributes)
+      {
+        isIgnoredByAutoDoc = ((ApiExplorerSettingsAttribute) ignoreAttributes[0]).IgnoreApi == true;
+      }
+
+      return isIgnoredByAutoDoc;
+    }
+
+    private void SaveReportToOutputFile(ApiEndPointReport report)
     {
       using (var writer = new StreamWriter(Config.OutputFilename, false))
       {
-        foreach (var route in routes)
+        foreach (var route in report.Rows)
         {
-          writer.WriteLine(route.Item1 + "|" + route.Item2 + "|" + route.Item3);
+          writer.WriteLine(route.Route + "|" + route.MethodSignature + "|" + route.IgnoreFromAutoDocs);
         }
       }
     }
@@ -230,7 +218,7 @@ namespace ApiEndPointReportGenerator.Generators
         .ToList();
     }
 
-    private static string MethodSignature(MethodInfo mi)
+    private static string GenerateMethodSignature(MethodInfo mi)
     {
       String[] param = mi.GetParameters()
         .Select(p => $"{p.ParameterType.Name} {p.Name}")

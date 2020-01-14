@@ -3,6 +3,8 @@ using EndPointCompare.Resources;
 using System;
 using System.Diagnostics;
 using System.IO;
+using Core.Helpers;
+using FileHelper = EndPointCompare.Helpers.FileHelper;
 
 namespace EndPointCompare.Generators
 {
@@ -17,7 +19,7 @@ namespace EndPointCompare.Generators
     public void Generate(string configFilename) //EndPointCompareConfigResource resource)
     {
       var configFileInfo = new FileInfo(configFilename);
-      var config = FileHelper.LoadInputFile(configFileInfo);
+      var config = FileHelper.LoadJsonFile(configFileInfo);
       _Config = config;
       //_Config = SampleGenerator
         //.CreateEndPointCompareConfigResourceSample(); // new EndPointCompareConfigResource();//TODO: Fix!!! resource;
@@ -56,7 +58,7 @@ namespace EndPointCompare.Generators
         var oldOutputFilename = FileHelper.CreateTempFile();
         oldFileConfig.OutputFilename = oldOutputFilename.FullName;
         var oldFileConfigFilename = FileHelper.CreateTempFile();
-        FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
+        Core.Helpers.FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
         pe.ExecuteEndPointReporter(generatorExeFilename, oldFileConfigFilename);
 
         var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
@@ -66,7 +68,7 @@ namespace EndPointCompare.Generators
         var newOutputFilename = FileHelper.CreateTempFile();
         newFileConfig.OutputFilename = newOutputFilename.FullName;
         var newFileConfigFilename = FileHelper.CreateTempFile();
-        FileHelper.SaveAsJson(newFileConfig, newFileConfigFilename.FullName);
+        Core.Helpers.FileHelper.SaveAsJson(newFileConfig, newFileConfigFilename.FullName);
         pe.ExecuteEndPointReporter(generatorExeFilename, newFileConfigFilename);
 
         Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
@@ -122,6 +124,7 @@ namespace EndPointCompare.Generators
       }
       return newReport;
     }
+
     //TODO: deduplicate these two methods as they do the same thing, but opposite source direction ONLY.
     private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
     {

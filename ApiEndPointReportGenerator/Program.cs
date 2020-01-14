@@ -1,6 +1,5 @@
 using ApiEndPointReportGenerator.Generators;
-using ApiEndPointReportGenerator.Helpers;
-using System;
+using Core.Helpers;
 using System.Diagnostics;
 
 namespace ApiEndPointReportGenerator

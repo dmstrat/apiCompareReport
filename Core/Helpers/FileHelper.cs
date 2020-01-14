@@ -2,11 +2,21 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using Newtonsoft.Json;
 
-namespace ApiEndPointReportGenerator.Helpers
+namespace Core.Helpers
 {
   public static class FileHelper
   {
+    public static void SaveAsJson(object resource, string saveFilename)
+    {
+      using (StreamWriter sw = File.CreateText(saveFilename))
+      {
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(sw, resource);
+      }
+    }
+
     public static FileInfo CreateTempFile()
     {
       var filename = Path.GetTempFileName();
