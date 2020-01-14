@@ -16,13 +16,13 @@ namespace EndPointCompare.Generators
 
     public const string BaseRouteWithoutVersion = "~/api/";
 
-    public void Generate(string configFilename) //EndPointCompareConfigResource resource)
+    public void Generate(string configFilename) 
     {
       var configFileInfo = new FileInfo(configFilename);
       var config = FileHelper.LoadJsonFile(configFileInfo);
       _Config = config;
       //_Config = SampleGenerator
-        //.CreateEndPointCompareConfigResourceSample(); // new EndPointCompareConfigResource();//TODO: Fix!!! resource;
+        //.CreateEndPointCompareConfigResourceSample(); 
 
       var baseOutputDirectory = "c:\\output\\";
       FileHelper.EnsureDirectoryExists(baseOutputDirectory);
@@ -88,45 +88,20 @@ namespace EndPointCompare.Generators
       }
     }
 
-    private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport, string outputReportFilename)
+    private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
     {
-      string newLineOriginal, newLine, oldLine;
-
-      var newReport = new FileInfo(outputReportFilename);
-      //loop through each new record trying to find a match in the old, no match means new route/method
-      using (StreamWriter reportStream = new StreamWriter(newReport.FullName, false))
-      {
-        using (StreamReader newStream = new StreamReader(newFileReport.FullName))
-        {
-          while ((newLineOriginal = newStream.ReadLine()) != null)
-          {
-            newLine = StripBaseRouteFromString(newLineOriginal);
-            using (StreamReader oldStream = new StreamReader(oldFileReport.FullName))
-            {
-              while ((oldLine = oldStream.ReadLine()) != null)
-              {
-                oldLine = StripBaseRouteFromString(oldLine);
-                var bothLinesMatch = newLine.Equals(oldLine, StringComparison.InvariantCultureIgnoreCase);
-                if (bothLinesMatch)
-                {
-                  break;
-                }
-
-              }
-              var noMatchFound = oldLine == null;
-              if (noMatchFound)
-              {
-                reportStream.WriteLine(newLineOriginal);
-              }
-            }
-          }
-        }
-      }
-      return newReport;
+      return GenerateReportWhereLeftEntriesMissingFromRightEntries(leftFileReport, rightFileReport,
+        outputReportFilename);
     }
 
-    //TODO: deduplicate these two methods as they do the same thing, but opposite source direction ONLY.
-    private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
+    private FileInfo GenerateNewEndPointsReport(FileInfo oldFileReport, FileInfo newFileReport, string outputReportFilename)
+    {
+      return GenerateReportWhereLeftEntriesMissingFromRightEntries(newFileReport, oldFileReport,
+        outputReportFilename);
+    }
+
+    private FileInfo GenerateReportWhereLeftEntriesMissingFromRightEntries(FileInfo leftFileInfo,
+      FileInfo rightFileInfo, string outputReportFilename)
     {
       string leftLineOriginal, leftLine, rightLine;
 
@@ -134,12 +109,12 @@ namespace EndPointCompare.Generators
       //loop through each left record trying to find a match in the right, no match means deprecated route/method
       using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName, false))
       {
-        using (StreamReader leftStream = new StreamReader(leftFileReport.FullName))
+        using (StreamReader leftStream = new StreamReader(leftFileInfo.FullName))
         {
           while ((leftLineOriginal = leftStream.ReadLine()) != null)
           {
             leftLine = StripBaseRouteFromString(leftLineOriginal);
-            using (StreamReader rightStream = new StreamReader(rightFileReport.FullName))
+            using (StreamReader rightStream = new StreamReader(rightFileInfo.FullName))
             {
               while ((rightLine = rightStream.ReadLine()) != null)
               {
