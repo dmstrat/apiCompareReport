@@ -1,9 +1,8 @@
-﻿using EndPointCompare.Helpers;
-using EndPointCompare.Resources;
+﻿using EndPointCompare.Resources;
 using System;
 using System.Diagnostics;
 using System.IO;
-using Core.Helpers;
+using Core.Resources;
 using FileHelper = EndPointCompare.Helpers.FileHelper;
 
 namespace EndPointCompare.Generators
@@ -53,39 +52,38 @@ namespace EndPointCompare.Generators
         Trace.WriteLine("Developing Api Endpoint Reports...");
         var oldFilename = Path.Combine(_OldMsiFolderExtractionPoint, personaPair.Resource_Old.InstallationDirectory,
           personaPair.Resource_Old.SourceFilenameOnly);
-        var oldFileConfig = personaPair.Resource_Old;
-        oldFileConfig.SourceFilename = oldFilename;
-        var oldOutputFilename = FileHelper.CreateTempFile();
-        oldFileConfig.OutputFilename = oldOutputFilename.FullName;
-        var oldFileConfigFilename = FileHelper.CreateTempFile();
-        Core.Helpers.FileHelper.SaveAsJson(oldFileConfig, oldFileConfigFilename.FullName);
-        pe.ExecuteEndPointReporter(generatorExeFilename, oldFileConfigFilename);
+        var oldReportFileInfo = GenerateApiReport(pe, generatorExeFilename, oldFilename, personaPair.Resource_Old);
 
         var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
           personaPair.Resource_New.SourceFilenameOnly);
-        var newFileConfig = personaPair.Resource_New;
-        newFileConfig.SourceFilename = newFilename;
-        var newOutputFilename = FileHelper.CreateTempFile();
-        newFileConfig.OutputFilename = newOutputFilename.FullName;
-        var newFileConfigFilename = FileHelper.CreateTempFile();
-        Core.Helpers.FileHelper.SaveAsJson(newFileConfig, newFileConfigFilename.FullName);
-        pe.ExecuteEndPointReporter(generatorExeFilename, newFileConfigFilename);
+        var newReportFileInfo = GenerateApiReport(pe, generatorExeFilename, newFilename, personaPair.Resource_New);
 
         Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
-        Trace.WriteLine("Old Api Report:" + oldOutputFilename);
-        Trace.WriteLine("New Api Report: " + newOutputFilename);
+        Trace.WriteLine("Old Api Report:" + oldReportFileInfo.FullName);
+        Trace.WriteLine("New Api Report: " + newReportFileInfo.FullName);
         //do compare
         var deprecatedReportFilename = personaPair.DeprecatedEndPointReportFilename;
-        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldOutputFilename, 
-                                                                       newOutputFilename, 
+        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldReportFileInfo, 
+                                                                       newReportFileInfo, 
                                                                        deprecatedReportFilename );
         Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
         var newReportFilename = personaPair.NewEndPointReportFilename;
-        var newReport = GenerateNewEndPointsReport(oldOutputFilename, newOutputFilename, newReportFilename);
+        var newReport = GenerateNewEndPointsReport(oldReportFileInfo, newReportFileInfo, newReportFilename);
         Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
 
         Trace.WriteLine("...Completed");
       }
+    }
+
+    private FileInfo GenerateApiReport(ProcessExecutor pe, string apiReportGeneratorExeFilename, string dllFilename, EndPointReportConfigResource configResource)
+    {
+      configResource.SourceFilename = dllFilename;
+      var oldOutputFilename = FileHelper.CreateTempFile();
+      configResource.OutputFilename = oldOutputFilename.FullName;
+      var oldFileConfigFilename = FileHelper.CreateTempFile();
+      Core.Helpers.FileHelper.SaveAsJson(configResource, oldFileConfigFilename.FullName);
+      pe.ExecuteEndPointReporter(apiReportGeneratorExeFilename, oldFileConfigFilename);
+      return oldOutputFilename;
     }
 
     private FileInfo GenerateDeprecatedEndPointsReport(FileInfo leftFileReport, FileInfo rightFileReport, string outputReportFilename)
