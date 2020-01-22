@@ -9,7 +9,7 @@
 			"Persona": "RetailWebApi",
 			"DeprecatedEndPointReportFilename": "c:\\output\\retailwebapi_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\reatailwebapi_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "RetailWebApi.dll",
 				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
@@ -19,7 +19,7 @@
 				"HelpPageControllerNamespaceToAvoid": "RP.RetailWebApi.Areas.HelpPage",
 				"BaseControllerName": "BaseWebRetailWebApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "RetailWebApi.dll",
 				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
@@ -34,7 +34,7 @@
 			"Persona": "WfmAdminApi",
 			"DeprecatedEndPointReportFilename": "c:\\output\\wfmadminapi_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\wfmadminapi_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "WfmAdminApi.dll",
 				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\WfmAdminApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\",
@@ -44,7 +44,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.WfmAdminApi.Areas.HelpPage",
 				"BaseControllerName": "BaseAdminApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "WfmAdminApi.dll",
 				"SourceFilename": "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\WfmAdminApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmAdminApi\\bin\\",
@@ -59,7 +59,7 @@
 			"Persona": "WfmEssApi",
 			"DeprecatedEndPointReportFilename": "c:\\output\\wfmessapi_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\wfmessapi_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "WfmEssApi.dll",
 				"SourceFilename": "c:\\output\\d3252996-7ff1-4896-976c-82a1d8caa4d3\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmEssApi\\bin\\WfmEssApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmEssApi\\bin\\",
@@ -69,7 +69,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.WfmEssApi.Areas.HelpPage",
 				"BaseControllerName": "BaseEssApiController"
 			},
-      "Resource_New": {
+      "ResourceNew": {
         "SourceFilenameOnly": "WfmEssApi.dll",
         "SourceFilename": "c:\\output\\aff0fbcf-5086-4b81-afcf-ace1518a2925\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmEssApi\\bin\\WfmEssApi.dll",
         "InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmEssApi\\bin\\",
@@ -84,7 +84,7 @@
 			"Persona": "WfmSiteManagerApi",
 			"DeprecatedEndPointReportFilename": "c:\\output\\wfmsmapi_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\wfmsmapi_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "WfmSiteManagerApi.dll",
 				"SourceFilename": "c:\\output\\d3252996-7ff1-4896-976c-82a1d8caa4d3\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmSiteManagerApi\\bin\\WfmSiteManagerApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmSiteManagerApi\\bin\\",
@@ -94,7 +94,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.WfmSiteManagerApi.Areas.HelpPage",
 				"BaseControllerName": "BaseSiteManagerApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "WfmSiteManagerApi.dll",
 				"SourceFilename": "c:\\output\\aff0fbcf-5086-4b81-afcf-ace1518a2925\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmSiteManagerApi\\bin\\WfmSiteManagerApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\WfmSiteManagerApi\\bin\\",
@@ -109,7 +109,7 @@
 			"Persona": "PersonaClock",
 			"DeprecatedEndPointReportFilename": "c:\\output\\personaclock_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\personaclock_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "PersonaClock.dll",
 				"SourceFilename": "c:\\output\\d3252996-7ff1-4896-976c-82a1d8caa4d3\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\PersonaClock\\bin\\PersonaClock.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\PersonaClock\\bin\\",
@@ -119,7 +119,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.PersonaClock.Areas.HelpPage",
 				"BaseControllerName": "BasePersonaClockApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "PersonaClock.dll",
 				"SourceFilename": "c:\\output\\aff0fbcf-5086-4b81-afcf-ace1518a2925\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\PersonaClock\\bin\\PersonaClock.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\PersonaClock\\bin\\",
@@ -134,7 +134,7 @@
 			"Persona": "EnterpriseAdmin",
 			"DeprecatedEndPointReportFilename": "c:\\output\\enterpriseadmin_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\enterpriseadmin_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "EnterpriseAdmin.dll",
 				"SourceFilename": "c:\\output\\d3252996-7ff1-4896-976c-82a1d8caa4d3\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EnterpriseAdmin\\bin\\EnterpriseAdmin.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EnterpriseAdmin\\bin\\",
@@ -144,7 +144,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.EnterpriseAdmin.Areas.HelpPage",
 				"BaseControllerName": "BaseEnterpriseAdminApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "EnterpriseAdmin.dll",
 				"SourceFilename": "c:\\output\\aff0fbcf-5086-4b81-afcf-ace1518a2925\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EnterpriseAdmin\\bin\\EnterpriseAdmin.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EnterpriseAdmin\\bin\\",
@@ -159,7 +159,7 @@
 			"Persona": "ESOSiteManagerApi",
 			"DeprecatedEndPointReportFilename": "c:\\output\\esositemanagerapi_deprecated.rpt",
 			"NewEndPointReportFilename": "c:\\output\\esositemanagerapi_new.rpt",
-			"Resource_Old": {
+			"ResourceOld": {
 				"SourceFilenameOnly": "EsoSmApi.dll",
 				"SourceFilename": "c:\\output\\d3252996-7ff1-4896-976c-82a1d8caa4d3\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EsoSmApi\\bin\\EsoSmApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EsoSmApi\\bin\\",
@@ -169,7 +169,7 @@
 				"HelpPageControllerNamespaceToAvoid": "Jda.EsoSmApi.Areas.HelpPage",
 				"BaseControllerName": "ESOSiteManagerApiController"
 			},
-			"Resource_New": {
+			"ResourceNew": {
 				"SourceFilenameOnly": "EsoSmApi.dll",
 				"SourceFilename": "c:\\output\\aff0fbcf-5086-4b81-afcf-ace1518a2925\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EsoSmApi\\bin\\EsoSmApi.dll",
 				"InstallationDirectory": "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\EsoSmApi\\bin\\",

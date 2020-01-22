@@ -1,27 +1,23 @@
-﻿using EndPointCompare.Resources;
+﻿using Core.Resources;
+using EndPointCompare.Resources;
 using System;
 using System.Diagnostics;
 using System.IO;
-using Core.Resources;
 using FileHelper = EndPointCompare.Helpers.FileHelper;
 
 namespace EndPointCompare.Generators
 {
   public class ApiCompareGenerator
   {
-    private EndPointCompareConfigResource _Config { get; set; }
+    private EndPointCompareConfigResource _Config;
     private string _OldMsiFolderExtractionPoint;
     private string _NewMsiFolderExtractionPoint;
 
     public const string BaseRouteWithoutVersion = "~/api/";
 
-    public void Generate(string configFilename) 
+    public void Generate(string configFilename)
     {
-      var configFileInfo = new FileInfo(configFilename);
-      var config = FileHelper.LoadJsonFile(configFileInfo);
-      _Config = config;
-      //_Config = SampleGenerator
-        //.CreateEndPointCompareConfigResourceSample(); 
+      LoadConfigFile(configFilename);
 
       var baseOutputDirectory = "c:\\output\\";
       FileHelper.EnsureDirectoryExists(baseOutputDirectory);
@@ -40,46 +36,59 @@ namespace EndPointCompare.Generators
       var oldMsiFilename = _Config.Msi_Old;
       var newMsiFilename = _Config.Msi_New;
       //extract msi to temp directories
-      
+
       var pe = new ProcessExecutor();
       pe.ExtractMsiToDirectory(oldMsiFilename, _OldMsiFolderExtractionPoint);
       pe.ExtractMsiToDirectory(newMsiFilename, _NewMsiFolderExtractionPoint);
-     
+
       var generatorExeFilename = _Config.ApiReportGeneratorExe;
       foreach (var personaPair in _Config.PersonaPairs)
       {
         Trace.WriteLine("Processing :" + personaPair.Persona + ":");
-        Trace.WriteLine("Developing Api Endpoint Reports...");
-        var oldFilename = Path.Combine(_OldMsiFolderExtractionPoint, personaPair.Resource_Old.InstallationDirectory,
-          personaPair.Resource_Old.SourceFilenameOnly);
-        var oldReportFileInfo = GenerateApiReport(pe, generatorExeFilename, oldFilename, personaPair.Resource_Old);
-
-        var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.Resource_New.InstallationDirectory,
-          personaPair.Resource_New.SourceFilenameOnly);
-        var newReportFileInfo = GenerateApiReport(pe, generatorExeFilename, newFilename, personaPair.Resource_New);
-
-        Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
-        Trace.WriteLine("Old Api Report:" + oldReportFileInfo.FullName);
-        Trace.WriteLine("New Api Report: " + newReportFileInfo.FullName);
-        //do compare
-        var deprecatedReportFilename = personaPair.DeprecatedEndPointReportFilename;
-        var deprecatedReport = GenerateDeprecatedEndPointsReport(oldReportFileInfo, 
-                                                                       newReportFileInfo, 
-                                                                       deprecatedReportFilename );
-        Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
-        var newReportFilename = personaPair.NewEndPointReportFilename;
-        var newReport = GenerateNewEndPointsReport(oldReportFileInfo, newReportFileInfo, newReportFilename);
-        Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
-
+        ProcessPersonaPair(personaPair, pe, generatorExeFilename);
         Trace.WriteLine("...Completed");
       }
     }
 
-    private FileInfo GenerateApiReport(ProcessExecutor pe, string apiReportGeneratorExeFilename, string dllFilename, EndPointReportConfigResource configResource)
+    private void LoadConfigFile(string configFilename)
+    {
+      var configFileInfo = new FileInfo(configFilename);
+      var config = FileHelper.LoadJsonFile(configFileInfo);
+      //_Config = SampleGenerator.CreateEndPointCompareConfigResourceSample(); 
+      _Config = config;
+    }
+
+    private void ProcessPersonaPair(EndPointReportConfigPairResource personaPair, IProcessExecutor pe, string apiReportGeneratorExeFilename)
+    {
+      Trace.WriteLine("Developing Api Endpoint Reports...");
+      var oldFilename = Path.Combine(_OldMsiFolderExtractionPoint, personaPair.ResourceOld.InstallationDirectory,
+          personaPair.ResourceOld.SourceFilenameOnly);
+      var oldReportFileInfo = GenerateApiReport(pe, apiReportGeneratorExeFilename, oldFilename, personaPair.ResourceOld);
+
+      var newFilename = Path.Combine(_NewMsiFolderExtractionPoint, personaPair.ResourceNew.InstallationDirectory,
+          personaPair.ResourceNew.SourceFilenameOnly);
+      var newReportFileInfo = GenerateApiReport(pe, apiReportGeneratorExeFilename, newFilename, personaPair.ResourceNew);
+
+      Trace.WriteLine("Developing Deprecated and New Endpoint Reports...");
+      Trace.WriteLine("Old Api Report:" + oldReportFileInfo.FullName);
+      Trace.WriteLine("New Api Report: " + newReportFileInfo.FullName);
+      //do compare
+      var deprecatedReportFilename = personaPair.DeprecatedEndPointReportFilename;
+      var deprecatedReport = GenerateDeprecatedEndPointsReport(oldReportFileInfo,
+          newReportFileInfo,
+          deprecatedReportFilename);
+      Trace.WriteLine("Deprecated Endpoints Report Generated:" + deprecatedReport.FullName);
+      var newReportFilename = personaPair.NewEndPointReportFilename;
+      var newReport = GenerateNewEndPointsReport(oldReportFileInfo, newReportFileInfo, newReportFilename);
+      Trace.WriteLine("New Endpoints Report Generated:" + newReport.FullName);
+    }
+
+    private FileInfo GenerateApiReport(IProcessExecutor pe, string apiReportGeneratorExeFilename, string dllFilename, 
+      EndPointReportConfigResource configResource)
     {
       configResource.SourceFilename = dllFilename;
       var oldOutputFilename = FileHelper.CreateTempFile();
-      configResource.OutputFilename = oldOutputFilename.FullName;
+      configResource.EndpointReportFilename = oldOutputFilename.FullName;
       var oldFileConfigFilename = FileHelper.CreateTempFile();
       Core.Helpers.FileHelper.SaveAsJson(configResource, oldFileConfigFilename.FullName);
       pe.ExecuteEndPointReporter(apiReportGeneratorExeFilename, oldFileConfigFilename);
@@ -101,19 +110,19 @@ namespace EndPointCompare.Generators
     private FileInfo GenerateReportWhereLeftEntriesMissingFromRightEntries(FileInfo leftFileInfo,
       FileInfo rightFileInfo, string outputReportFilename)
     {
-      string leftLineOriginal, leftLine, rightLine;
-
-      var deprecatedReport = new FileInfo(outputReportFilename);
+      var outputReport = new FileInfo(outputReportFilename);
       //loop through each left record trying to find a match in the right, no match means deprecated route/method
-      using (StreamWriter reportStream = new StreamWriter(deprecatedReport.FullName, false))
+      using (var reportStream = new StreamWriter(outputReport.FullName, false))
       {
-        using (StreamReader leftStream = new StreamReader(leftFileInfo.FullName))
+        using (var leftStream = new StreamReader(leftFileInfo.FullName))
         {
+          string leftLineOriginal;
           while ((leftLineOriginal = leftStream.ReadLine()) != null)
           {
-            leftLine = StripBaseRouteFromString(leftLineOriginal);
-            using (StreamReader rightStream = new StreamReader(rightFileInfo.FullName))
+            var leftLine = StripBaseRouteFromString(leftLineOriginal);
+            using (var rightStream = new StreamReader(rightFileInfo.FullName))
             {
+              string rightLine;
               while ((rightLine = rightStream.ReadLine()) != null)
               {
                 rightLine = StripBaseRouteFromString(rightLine);
@@ -132,7 +141,7 @@ namespace EndPointCompare.Generators
           }
         }
       }
-      return deprecatedReport;
+      return outputReport;
     }
 
     public static string StripBaseRouteFromString(string sourceLine)

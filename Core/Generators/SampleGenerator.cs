@@ -15,7 +15,7 @@ namespace Core.Generators
           "c:\\output\\RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\RetailWebApi.dll",
         InstallationDirectory = "RedPrairieRetail\\DefaultInstance\\Personae\\IIS\\RetailWebAPI\\bin\\",
         ConfigFileRelativeToInstall = "..\\web.config",
-        OutputFilename = "c:\\output\\" + reportName,
+        EndpointReportFilename = "c:\\output\\" + reportName,
         ControllerNamespace = "RP.RetailWebApi",
         HelpPageControllerNamespaceToAvoid = "RP.RetailWebApi.Areas.HelpPage",
         BaseControllerName = "BaseWebRetailWebApiController"

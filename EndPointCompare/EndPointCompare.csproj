@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generators\SampleGenerator.cs" />
+    <Compile Include="IProcessExecutor.cs" />
     <Compile Include="ProcessExecutor.cs" />
     <Compile Include="Generators\ApiCompareGenerator.cs" />
     <Compile Include="Helpers\FileHelper.cs" />

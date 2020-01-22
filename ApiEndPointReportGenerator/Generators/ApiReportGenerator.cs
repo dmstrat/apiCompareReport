@@ -52,20 +52,20 @@ namespace ApiEndPointReportGenerator.Generators
 
       var assemblyNeededList = new List<AssemblyNeeded>();
 
-      for (int x = 0; x < runtimeList.Count; x++)
+      for (int runtimeListPointer = 0; runtimeListPointer < runtimeList.Count; runtimeListPointer++)
       {
-        for (int z = 0; z < runtimeList.Item(x).ChildNodes.Count; z++)
+        for (int runtimeChildrenPointer = 0; runtimeChildrenPointer < runtimeList.Item(runtimeListPointer).ChildNodes.Count; runtimeChildrenPointer++)
         {
-          var isAssemblyBindingNode = runtimeList.Item(x).ChildNodes[z].Name == AssemblyBindingNodeName;
+          var isAssemblyBindingNode = runtimeList.Item(runtimeListPointer).ChildNodes[runtimeChildrenPointer].Name == AssemblyBindingNodeName;
           if (isAssemblyBindingNode)
           {
-            var assemblyBindingItem = runtimeList.Item(x).ChildNodes[z];
-            for (int y = 0; y < assemblyBindingItem.ChildNodes.Count; y++)
+            var assemblyBindingItem = runtimeList.Item(runtimeListPointer).ChildNodes[runtimeChildrenPointer];
+            for (int assemblyBindingItemsPointer = 0; assemblyBindingItemsPointer < assemblyBindingItem.ChildNodes.Count; assemblyBindingItemsPointer++)
             {
-              var isDependentAssemblyNode = assemblyBindingItem.ChildNodes[y].Name == DependentAssemblyNodeName;
+              var isDependentAssemblyNode = assemblyBindingItem.ChildNodes[assemblyBindingItemsPointer].Name == DependentAssemblyNodeName;
               if (isDependentAssemblyNode)
               {
-                var dependentAssemblyItem = assemblyBindingItem.ChildNodes[y];
+                var dependentAssemblyItem = assemblyBindingItem.ChildNodes[assemblyBindingItemsPointer];
                 var assemblyIdentityPointer = -1;
                 var bindingRedirectPointer = -1;
                 for (int i = 0; i < dependentAssemblyItem.ChildNodes.Count; i++)
@@ -115,7 +115,6 @@ namespace ApiEndPointReportGenerator.Generators
 
     private void ApplyRedirectAssemblies(IEnumerable<AssemblyNeeded> assembliesNeeded)
     {
-
       foreach (var assemblyNeeded in assembliesNeeded)
       {
         var version = new Version(assemblyNeeded.Version);
@@ -129,7 +128,7 @@ namespace ApiEndPointReportGenerator.Generators
         .GetTypes()
         .Where(t => t.IsNotCompilerGenerated() && !t.IsEnum && t.IsClass);
 
-      IEnumerable<Type> controllers = GetAllRelevantControllerClasses(apiClasses, Config.ControllerNamespace, Config.BaseControllerName);
+      var controllers = GetAllRelevantControllerClasses(apiClasses, Config.ControllerNamespace, Config.BaseControllerName);
       return controllers;
     }
 
@@ -200,7 +199,7 @@ namespace ApiEndPointReportGenerator.Generators
 
     private void SaveReportToOutputFile(ApiEndPointReport report)
     {
-      using (var writer = new StreamWriter(Config.OutputFilename, false))
+      using (var writer = new StreamWriter(Config.EndpointReportFilename, false))
       {
         foreach (var route in report.Rows)
         {

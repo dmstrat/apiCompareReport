@@ -8,7 +8,7 @@ namespace ApiEndPointReportGenerator
 {
   public static class TypeExtensions
   {
-    private const BindingFlags _AllScopes =
+    private const BindingFlags AllScopes =
       BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Public;
 
     public static bool IsNotCompilerGenerated(this Type type)
@@ -30,9 +30,10 @@ namespace ApiEndPointReportGenerator
         throw new ArgumentNullException(nameof(type));
       }
 
-      bool NoCustomAttributesCreatedByCompiler(MethodInfo m) => !m.GetCustomAttributes(true).Any(a => a is CompilerGeneratedAttribute);    
+      bool NoCustomAttributesCreatedByCompiler(MethodInfo m) => !m.GetCustomAttributes(true).
+        Any(a => a is CompilerGeneratedAttribute);    
 
-      return type.GetMethods(_AllScopes)
+      return type.GetMethods(AllScopes)
         .Where((Func<MethodInfo, bool>) NoCustomAttributesCreatedByCompiler)
         .Where(i => i.DeclaringType.FullName.Contains(controllerNamespace));
     }

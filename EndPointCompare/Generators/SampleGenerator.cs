@@ -14,8 +14,8 @@ namespace EndPointCompare.Generators
         Persona = "RetailWebApi",
         DeprecatedEndPointReportFilename = "c:\\output\\retailwebapi_deprecated.rpt",
         NewEndPointReportFilename= "c:\\output\\reatailwebapi_new.rpt",
-        Resource_Old = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_old.rptx"),
-        Resource_New = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_new.rptx")
+        ResourceOld = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_old.rptx"),
+        ResourceNew = Core.Generators.SampleGenerator.GenerateEndPointReportConfigResource("retailwebapi_new.rptx")
       };
       var resource = new EndPointCompareConfigResource
       {

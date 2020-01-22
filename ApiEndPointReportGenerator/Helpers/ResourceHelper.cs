@@ -13,9 +13,9 @@ namespace ApiEndPointReportGenerator.Helpers
       SampleGenerator.GenerateEndPointReportConfigResource();
 #endif
 
-      using (StreamReader r = new StreamReader(resourceFileInfo.FullName))
+      using (var resourceStreamReader = new StreamReader(resourceFileInfo.FullName))
       {
-        var json = r.ReadToEnd();
+        var json = resourceStreamReader.ReadToEnd();
         var resource = JsonConvert.DeserializeObject<EndPointReportConfigResource>(json);
         return resource;
       }

@@ -4,18 +4,18 @@ using System.IO;
 
 namespace EndPointCompare
 {
-  internal class ProcessExecutor
+  internal class ProcessExecutor : IProcessExecutor
   {
-    public void ExecuteEndPointReporter(string GeneratorExeFilename, FileInfo configFilename)
+    public void ExecuteEndPointReporter(string apiReportGeneratorExeFilename, FileInfo configFilename)
     {
-      var generatorFileInfo = new FileInfo(GeneratorExeFilename);
+      var generatorFileInfo = new FileInfo(apiReportGeneratorExeFilename);
       if (generatorFileInfo.Exists)
       {
         ExecuteAndWait(generatorFileInfo.FullName, configFilename.FullName);
       }
       else
       {
-        Trace.WriteLine("Report Generator NOT at: " + GeneratorExeFilename);
+        Trace.WriteLine("Report Generator NOT at: " + apiReportGeneratorExeFilename);
       }
     }
 

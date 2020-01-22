@@ -24,7 +24,7 @@ namespace ApiEndPointReportGenerator.Helpers
         {
           return alreadyLoadedAssembly;
         }
-        Debug.WriteLine("Redirecting assembly load of " + args.Name + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
+        Trace.WriteLine("Redirecting assembly load of " + args.Name + ",\tloaded by " + (args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName));
 
         requestedAssembly.Version = targetVersion;
         requestedAssembly.SetPublicKeyToken(new AssemblyName("x, PublicKeyToken=" + publicKeyToken).GetPublicKeyToken());

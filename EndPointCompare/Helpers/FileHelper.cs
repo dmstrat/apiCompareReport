@@ -1,10 +1,9 @@
-﻿using System;
+﻿using EndPointCompare.Resources;
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security;
-using EndPointCompare.Resources;
-using Newtonsoft.Json;
 using System.Runtime.Serialization.Json;
+using System.Security;
 
 namespace EndPointCompare.Helpers
 {
@@ -12,7 +11,7 @@ namespace EndPointCompare.Helpers
   {
     public static EndPointCompareConfigResource LoadJsonFile(FileInfo executionConfigFileInfo)
     {
-      EndPointCompareConfigResource configResource = new EndPointCompareConfigResource();
+      var configResource = new EndPointCompareConfigResource();
       Trace.Write($"Checking input file by loading to associated class....");
       try
       {
@@ -60,7 +59,6 @@ namespace EndPointCompare.Helpers
         dirInfo.Create();
       }
     }
-
 
     public static FileInfo CreateTempFile()
     {
